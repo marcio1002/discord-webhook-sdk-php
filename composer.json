@@ -1,0 +1,20 @@
+{
+  "name": "marcio-zorion/discord-webhook-php",
+  "description": "This sdk provides a simple way to send messages by hooks in discord",
+  "license": "GPL-3.0-only",
+  "autoload": {
+    "psr-4": {
+      "Marcio1002\\DiscordWebhook\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "marcio1002",
+      "email": "marcioalemao1999@yahoo.com"
+    }
+  ],
+  "require": {
+    "react/http": "^1.6",
+    "clue/block-react": "^1.5"
+  }
+}
