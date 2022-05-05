@@ -2,41 +2,15 @@
 
 namespace Marcio1002\DiscordWebhook;
 
-use DateTime;
+use 
+    Marcio1002\DiscordWebhook\Helpers\Traits\Format,
+    Marcio1002\DiscordWebhook\Helpers\Validator;
 
 class MessageEmbed
 {
+    use Format;
+
     private array $embed = [];
-
-    public function __toString()
-    {
-        return $this->toJson();
-    }
-
-    public function setContent(string $content): self
-    {
-        $this->content = $content;
-
-        return $this;
-    }
-
-    public function setUsername(string $username): self
-    {
-        $this->username = $username;
-
-        return $this;
-    }
-
-    public function setAvatar(string $avatar): self
-    {
-        if (!$this->isURL($avatar)) {
-            throw new \InvalidArgumentException('Avatar must be a valid URL');
-        }
-
-        $this->avatar = $avatar;
-
-        return $this;
-    }
 
 
     /**
@@ -61,11 +35,11 @@ class MessageEmbed
      */
     public function setAuthor(string $name, string $url, string $icon): self
     {
-        if (!$this->isURL($url)) {
+        if (!Validator::isURL($url)) {
             throw new \InvalidArgumentException('Invalid URL of property url');
         }
 
-        if (!$this->isURL($icon)) {
+        if (!Validator::isURL($icon)) {
             throw new \InvalidArgumentException('Invalid URL of property icon');
         }
 
@@ -93,6 +67,7 @@ class MessageEmbed
     /**
      * Adds the date and time of the message sent
      * @param string|int|\Datetime $timestamp
+     * @return self
      */
     public function setTimesTamp($timestamp = null): self
     {
@@ -120,8 +95,7 @@ class MessageEmbed
             $color = hexdec(str_replace('#', '', $color));
         }
 
-        if(preg_match("//", $color)) {
-
+        if (preg_match("//", $color)) {
         }
 
         $this->embed['color'] = $color;
@@ -138,7 +112,7 @@ class MessageEmbed
      */
     public function setImage(string $image, int $height = 0, int $width = 0): self
     {
-        if (!$this->isURL($image)) {
+        if (!Validator::isURL($image) && !Validator::isValidImage($image)) {
             throw new \InvalidArgumentException('Invalid URL of property image');
         }
 
@@ -159,7 +133,7 @@ class MessageEmbed
      */
     public function setUrl(string $url): self
     {
-        if (!$this->isURL($url)) {
+        if (!Validator::isURL($url)) {
             throw new \InvalidArgumentException('Invalid URL');
         }
 
@@ -175,7 +149,7 @@ class MessageEmbed
      */
     public function setThumbnail(string $thumbnail)
     {
-        if (!$this->isURL($thumbnail)) {
+        if (!Validator::isURL($thumbnail)) {
             throw new \InvalidArgumentException('Invalid URL');
         }
 
@@ -190,7 +164,7 @@ class MessageEmbed
      * @param string $name
      * @param string $value
      * @param boolean $inline
-     * @return void
+     * @return self
      */
     public function setField(string $name, string $value, bool $inline = false)
     {
@@ -228,15 +202,17 @@ class MessageEmbed
     /**
      * Filter the fields according to the callback result
      * @param callable|\Closure $callback
+     * @param int @mode
+     * @return self
      */
-    public function filterFields($callback): self
+    public function filterFields($callback, int $mode = 0): self
     {
         if (!is_callable($callback) && !($callback instanceof \Closure)) {
             throw new \InvalidArgumentException('Invalid callback');
         }
 
         if (in_array('fields', $this->embed)) {
-            $this->embed['fields'] = array_filter($this->embed['fields'], $callback, ARRAY_FILTER_USE_BOTH);
+            $this->embed['fields'] = array_filter($this->embed['fields'], $callback, $mode);
         }
 
         return $this;
@@ -252,7 +228,7 @@ class MessageEmbed
      */
     public  function setFooter(string $name, string $icon): self
     {
-        if (!$this->isURL($icon)) {
+        if (!Validator::isURL($icon)) {
             throw new \InvalidArgumentException('Invalid URL');
         }
 
@@ -264,17 +240,6 @@ class MessageEmbed
         return $this;
     }
 
-
-    /**
-     * Returns the JSON representation of the embed
-     *
-     * @return string
-     */
-    public function toJson(): string
-    {
-        return json_encode($this->getEmbed(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
-    }
-
     /**
      * Returns the array representation of the embed
      *
@@ -283,35 +248,5 @@ class MessageEmbed
     public function getEmbed(): array
     {
         return $this->embed;
-    }
-
-    public function toArray(): array
-    {
-        $toArray = [];
-
-        foreach ($this as $key => $value) {
-            $toArray[$key] = $value;
-        }
-
-        return $toArray;
-    }
-
-    /**
-     * Create a random color
-     *
-     * @return string
-     */
-    public static function randomColor(bool $hexadecimal = false): string
-    {
-        if ($hexadecimal) {
-            return sprintf('#%06X', mt_rand(0, 0xFFFFFF));
-        }
-
-        return (string) mt_rand(0, 0xFFFFFF);
-    }
-
-    private function isURL(string $uri): bool
-    {
-        return filter_var($uri, FILTER_VALIDATE_URL) ?  true : false;
     }
 }

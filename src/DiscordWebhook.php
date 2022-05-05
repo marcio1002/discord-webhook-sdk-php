@@ -2,6 +2,7 @@
 
 namespace Marcio1002\DiscordWebhook;
 
+use Marcio1002\DiscordWebhook\Helpers\Validator;
 use
     React\Http\Browser,
     React\Promise\Promise;
@@ -20,7 +21,7 @@ class DiscordWebhook
     {
 
         $this->browser = new Browser();
-        $this->options = $options;
+        $this->options = $this->sanitizeOptions($options);
     }
 
 
@@ -62,7 +63,7 @@ class DiscordWebhook
 
     /**
      * 
-     * @param string|array|\Marcio1002\DiscordWebhook\MessageEmbed|\Marcio1002\DiscordWebhook\MessageEmbed[] $message
+     * @param string|array|\Marcio1002\DiscordWebhook\MessageEmbed|\Marcio1002\DiscordWebhook\MessageEmbed[]|\Marcio1002\DiscordWebhook\Message $message
      * @return string
      */
     private function resolveMessage($message)
@@ -75,25 +76,29 @@ class DiscordWebhook
             $webhook_props['content'] = $message;
         }
 
-        if ($message instanceof MessageEmbed) {
+        if($message instanceof Message) {
             $webhook_props = $message->toArray();
-            $webhook_props['embeds'] = [$webhook_props['embed']];
-            unset($webhook_props['embed']);
+        }
+
+        if ($message instanceof MessageEmbed) {
+            $webhook_props['embeds'] = [$message->getEmbed()];
         }
 
         if (is_array($message)) {
-            $append_props = function ($p) {
-                if ($p instanceof MessageEmbed) {
-                    return $p->getEmbed();
-                }
+            $is_message_embed = Validator::arrayEvery(fn($v) => $v instanceof MessageEmbed, $message);
+            $is_array_php = Validator::arrayEvery(fn($v) => !($v instanceof Message), $message); 
 
-                return $p;
-            };
+            if(!$is_message_embed && !$is_array_php) {
+                throw new \InvalidArgumentException('Expected an array php');
+            }
 
-            $webhook_props['embeds'] = array_map(
-                $append_props,
-                $message,
-            );
+            if($is_message_embed) {
+                $webhook_props['embeds'] = array_map(fn($v) => $v->getEmbed(), $message);
+            }
+
+            if(!$is_message_embed) {
+                $webhook_props = $this->sanitizeProps($message);
+            }
         }
 
         if (!empty($options)) {
@@ -102,5 +107,44 @@ class DiscordWebhook
 
 
         return json_encode($webhook_props);
+    }
+
+
+    /**
+     * Sanitize the options
+     *
+     * @param array $options
+     * @return void
+     */
+    private function sanitizeOptions(array $options)
+    {
+        $options_in_includes = ['webhook_url', 'tts'];
+
+        $options = array_filter(
+            $options,
+            fn($opKey) =>  in_array($opKey, $options_in_includes),
+            ARRAY_FILTER_USE_KEY
+        );
+
+        return $options;
+    }
+
+    /**
+     * Sanitize the props webhook
+     *
+     * @param array $props
+     * @return void
+     */
+    private function sanitizeProps(array $props)
+    {
+        $props_in_includes = ['content', 'username', 'avatar_url', 'tts', 'embeds', 'attachments'];
+
+        $props = array_filter(
+            $props,
+            fn($msgKey) =>  in_array($msgKey, $props_in_includes),
+            ARRAY_FILTER_USE_KEY
+        );
+
+        return $props;
     }
 }

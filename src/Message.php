@@ -1,0 +1,83 @@
+<?php
+namespace Marcio1002\DiscordWebhook;
+
+use InvalidArgumentException;
+use 
+    Marcio1002\DiscordWebhook\Helpers\Traits\Format,
+    Marcio1002\DiscordWebhook\Helpers\Validator;
+
+class Message
+{
+
+    use Format;
+
+    /**
+     * 
+     *
+     * @param string $content
+     * @return self
+     */
+    public function setContent(string $content): self
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    public function setAvatar(string $avatar): self
+    {
+        if (!Validator::isURL($avatar)) {
+            throw new \InvalidArgumentException('Avatar must be a valid URL');
+        }
+
+        $this->avatar_url = $avatar;
+
+        return $this;
+    }
+
+    /**
+     * Adds a embed(s) to the message
+     *
+     * @param Marcio1002\DiscordWebhook\MessageEmbed|Marcio1002\DiscordWebhook\MessageEmbed[] $embeds
+     * @return void
+     */
+    public function setEmbeds($embeds): self 
+    {
+        if(
+            !($embeds instanceof MessageEmbed) &&
+            (is_array($embeds) && !Validator::arrayEvery(fn($v) => $v instanceof MessageEmbed, $embeds))
+        ) {
+            throw new InvalidArgumentException('Expected an object or array of MessageEmbed object');
+        }
+
+        if(is_array($embeds)) {
+            $embeds = array_slice($embeds, 0, 10);
+            $this->embeds = array_map(fn(MessageEmbed $v) => $v->getEmbed(), $embeds);
+        } else {
+            $this->embeds = [$embeds->getEmbed()];
+        }
+
+        return $this;
+    }
+
+    /**
+     * Create a random color
+     *
+     * @return string
+     */
+    public static function randomColor(bool $hexadecimal = false): string
+    {
+        if ($hexadecimal) {
+            return sprintf('#%06X', mt_rand(0, 0xFFFFFF));
+        }
+
+        return (string) mt_rand(0, 0xFFFFFF);
+    }
+}
