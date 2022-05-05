@@ -36,6 +36,8 @@ class Validator {
         foreach ($array as $key => $value) {
             if ($callback($value, $key)) return true;
         }
+
+        return false;
     }
 
     /**

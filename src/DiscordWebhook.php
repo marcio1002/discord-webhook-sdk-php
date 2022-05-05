@@ -2,10 +2,10 @@
 
 namespace Marcio1002\DiscordWebhook;
 
-use Marcio1002\DiscordWebhook\Helpers\Validator;
 use
     React\Http\Browser,
-    React\Promise\Promise;
+    React\Promise\Promise,
+    Marcio1002\DiscordWebhook\Helpers\Validator;
 
 class DiscordWebhook
 {
@@ -27,7 +27,7 @@ class DiscordWebhook
 
     /**
      * Send a message to the webhook
-     * @param string|array|\Marcio1002\DiscordWebhook\MessageEmbed|\Marcio1002\DiscordWebhook\MessageEmbed[] $message
+     * @param string|array|\Marcio1002\DiscordWebhook\MessageEmbed|\Marcio1002\DiscordWebhook\MessageEmbed[]|\Marcio1002\DiscordWebhook\Message $message
      * @return Promise
      */
     public function sendMessage($message): Promise
@@ -46,7 +46,7 @@ class DiscordWebhook
     /**
      * Send a message to the webhook synchronously
      *
-     * @param string|array|\Marcio1002\DiscordWebhook\MessageEmbed|\Marcio1002\DiscordWebhook\MessageEmbed[] $message
+     * @param string|array|\Marcio1002\DiscordWebhook\MessageEmbed|\Marcio1002\DiscordWebhook\MessageEmbed[]|\Marcio1002\DiscordWebhook\Message $message
      * @return mixed
      */
     public function sendMessageSync($message)
@@ -93,7 +93,7 @@ class DiscordWebhook
             }
 
             if($is_message_embed) {
-                $webhook_props['embeds'] = array_map(fn($v) => $v->getEmbed(), $message);
+                $webhook_props['embeds'] = array_map(fn(MessageEmbed $v) => $v->getEmbed(), $message);
             }
 
             if(!$is_message_embed) {
