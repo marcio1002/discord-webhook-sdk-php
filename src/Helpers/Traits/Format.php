@@ -5,7 +5,7 @@ namespace Marcio1002\DiscordWebhook\Helpers\Traits;
 trait Format
 {
 
-     public function __toString()
+    public function __toString()
     {
         return $this->toJson();
     }
@@ -34,5 +34,24 @@ trait Format
         }
 
         return $toArray;
+    }
+
+    /**
+     * Sanitize values in an array
+     *
+     * @param array $fields
+     * @param array $values
+     * @param [type] $flag
+     * @return array
+     */
+    public function sanitize(array $fields, array $values, $flag = ARRAY_FILTER_USE_KEY): array
+    {
+        $options = array_filter(
+            $values,
+            fn ($field) =>  in_array($field, $fields),
+            $flag
+        );
+
+        return $options;
     }
 }
