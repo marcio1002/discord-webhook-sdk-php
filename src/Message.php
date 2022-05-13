@@ -82,18 +82,4 @@ class Message
 
         return $this;
     }
-
-    /**
-     * Create a random color
-     *
-     * @return string
-     */
-    public static function randomColor(bool $hexadecimal = false): string
-    {
-        if ($hexadecimal) {
-            return sprintf('#%06X', mt_rand(0, 0xFFFFFF));
-        }
-
-        return (string) mt_rand(0, 0xFFFFFF);
-    }
 }

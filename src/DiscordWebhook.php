@@ -19,7 +19,6 @@ class DiscordWebhook
      */
     public function __construct(array $options)
     {
-
         $this->browser = new Browser();
         $this->options = $this->sanitizeOptions($options);
     }
@@ -89,7 +88,7 @@ class DiscordWebhook
             $is_array_php = Validator::arrayEvery(fn($v) => !($v instanceof Message), $message); 
 
             if(!$is_message_embed && !$is_array_php) {
-                throw new \InvalidArgumentException('Expected an array php');
+                throw new \InvalidArgumentException('Expected an array php or array of MessageEmbed object');
             }
 
             if($is_message_embed) {
@@ -137,7 +136,7 @@ class DiscordWebhook
      */
     private function sanitizeProps(array $props)
     {
-        $props_in_includes = ['content', 'username', 'avatar_url', 'tts', 'embeds', 'attachments'];
+        $props_in_includes = ['content', 'username', 'avatar_url', 'tts', 'embeds', 'components', 'attachments'];
 
         $props = array_filter(
             $props,

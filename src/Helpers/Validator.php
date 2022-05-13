@@ -14,6 +14,12 @@ class Validator {
         return filter_var($uri, FILTER_VALIDATE_URL) ?  true : false;
     }
 
+    /**
+     * Check if the type image is valid
+     * 
+     * @param string $image
+     * @return boolean
+     */
     public static function isValidImage(string $image): bool
     {
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -25,7 +31,7 @@ class Validator {
     }
 
     /**
-     * 
+     *  Checks if at least one element in the array is valid
      *
      * @param callback|\Closure $callback
      * @param array $array
@@ -41,8 +47,8 @@ class Validator {
     }
 
     /**
+     *  Checks if all the elements in the array are valid
      * 
-     *
      * @param callback|\Closure $callback
      * @param array $array
      * @return boolean
