@@ -9,7 +9,6 @@ use
 
 class Message
 {
-
     use Format;
 
     /**
@@ -70,8 +69,8 @@ class Message
 
     /**
      * Add a component(s) to the message
-     *
-     * @param Component|Component[] $component
+     * @deprecated version 1.1.1
+     * @param Marcio1002\DiscordWebhook\Component|Marcio1002\DiscordWebhook\Component[] $component
      * @return self
      */
     public function setComponent($component): self

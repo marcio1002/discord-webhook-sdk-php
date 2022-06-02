@@ -117,7 +117,7 @@ class DiscordWebhook
      */
     private function sanitizeOptions(array $options)
     {
-        $options_in_includes = ['webhook_url', 'tts'];
+        $options_in_includes = ['webhook_url', 'tts', 'thread_name'];
 
         $options = array_filter(
             $options,
@@ -136,7 +136,7 @@ class DiscordWebhook
      */
     private function sanitizeProps(array $props)
     {
-        $props_in_includes = ['content', 'username', 'avatar_url', 'tts', 'embeds', 'components', 'attachments'];
+        $props_in_includes = ['content', 'username', 'avatar_url', 'tts', 'embeds'];
 
         $props = array_filter(
             $props,

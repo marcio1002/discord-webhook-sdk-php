@@ -6,6 +6,11 @@ use
     Marcio1002\DiscordWebhook\Helpers\Traits\Format,
     Marcio1002\DiscordWebhook\Helpers\Validator;
 
+
+/**
+ * @deprecated since version 1.1.1
+ * Discord not implemented in webhooks
+ */
 class Component
 {
     use Format;
