@@ -1,10 +1,6 @@
 # Discord Webhook PHP
 
 <div align='center'>
-    <img src='./assets/example-use-discord-webhook-php.png' alt='example use Discord webhook PHP' width='50%'/>
-</div>
-
-<div align='center'>
     <img src='./assets/send-message.png' alt='Message sent in Discord by webhook' width='50%'/>
 </div>
 
