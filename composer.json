@@ -1,5 +1,5 @@
 {
-    "name": "marcio1002/discord-webhook-php",
+    "name": "marcio1002/discord-webhook-sdk-php",
     "description": "This sdk provides a simple way to send messages by hooks in discord",
     "license": "GPL-3.0-only",
     "type": "package",
