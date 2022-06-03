@@ -69,8 +69,8 @@ $message_embed = new MessageEmbed();
 
 $message_embed
     ->setTitle('Title')
-    ->setThumbnail('thumbnail_url')
     ->setDescription('Description');
+    ->setThumbnail('URL')
 
 $discord->sendMessage($message_embed);
 
@@ -95,9 +95,12 @@ $webhook->sendMessageSync([
     'username' => 'My Webhook',
     'content' => 'My Content',
     'embeds' => [
-        'title' => 'Hello ',
-        'description' => 'Description',
-        'thumbnail' => ['url' => 'URL']
+        [
+            'title' => 'Hello ',
+            'description' => 'Description',
+            'thumbnail' => ['url' => 'URL'],
+            'color' => 16761029
+        ]
     ]
 ]);
 ```
