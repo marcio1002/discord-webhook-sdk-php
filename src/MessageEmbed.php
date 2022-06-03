@@ -2,7 +2,7 @@
 
 namespace Marcio1002\DiscordWebhook;
 
-use 
+use
     Marcio1002\DiscordWebhook\Helpers\Traits\Format,
     Marcio1002\DiscordWebhook\Helpers\Validator;
 
@@ -85,6 +85,12 @@ class MessageEmbed
 
     /**
      * Adds a color to the embed
+     * 
+     * @example $color set color code hex, rgb or decimal
+     * 
+     * setColor('#363636') 
+     * setColor('rgb(255, 255, 133)')
+     * setColor(16761029)
      *
      * @param string $color
      * @return self
@@ -95,7 +101,18 @@ class MessageEmbed
             $color = hexdec(str_replace('#', '', $color));
         }
 
-        if (preg_match("//", $color)) {
+        if (preg_match("/^rgb[a]?/", $color)) {
+            $color = preg_replace('/[^\d,]+/', '', $color);
+            $color = explode(',', $color);
+
+            if (count($color) < 3 || count($color) > 3) {
+                throw new \InvalidArgumentException('Invalid rgb color format');
+            }
+
+            $color = array_map('trim', $color);
+
+            [$r, $g, $b] = $color;
+            $color = ($r << 16) + ($g << 8) + $b;
         }
 
         $this->embed['color'] = $color;
@@ -153,7 +170,9 @@ class MessageEmbed
             throw new \InvalidArgumentException('Invalid URL');
         }
 
-        $this->embed['thumbnail'] = $thumbnail;
+        $this->embed['thumbnail'] = [
+            'url' => $thumbnail
+        ];
 
         return $this;
     }
@@ -250,7 +269,7 @@ class MessageEmbed
         return $this->embed;
     }
 
-     /**
+    /**
      * Create a random color
      *
      * @return string

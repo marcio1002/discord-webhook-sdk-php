@@ -3,11 +3,14 @@
 namespace Marcio1002\DiscordWebhook;
 
 use
-    React\Http\Browser,
-    React\Promise\Promise,
+    Marcio1002\DiscordWebhook\Contracts\DiscordWebhookContract,
     Marcio1002\DiscordWebhook\Helpers\Validator;
 
-class DiscordWebhook
+use
+    React\Http\Browser,
+    React\Promise\Promise;
+
+class DiscordWebhook implements DiscordWebhookContract
 {
 
     private $browser;

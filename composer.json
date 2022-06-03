@@ -1,21 +1,28 @@
 {
-  "name": "marcio-zorion/discord-webhook-php",
-  "description": "This sdk provides a simple way to send messages by hooks in discord",
-  "license": "GPL-3.0-only",
-  "version": "1.1.1-dev",
-  "autoload": {
-    "psr-4": {
-      "Marcio1002\\DiscordWebhook\\": "src/"
+    "name": "marcio1002/discord-webhook-php",
+    "description": "This sdk provides a simple way to send messages by hooks in discord",
+    "license": "GPL-3.0-only",
+    "type": "package",
+    "autoload": {
+        "psr-4": {
+            "Marcio1002\\DiscordWebhook\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "marcio1002",
+            "email": "marcioalemao1999@yahoo.com"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/marcio1002/discord-webhook-php"
+        }
+    ],
+    "require": {
+        "php": ">=7.4.0",
+        "react/http": "^1.6",
+        "clue/block-react": "^1.5"
     }
-  },
-  "authors": [
-    {
-      "name": "marcio1002",
-      "email": "marcioalemao1999@yahoo.com"
-    }
-  ],
-  "require": {
-    "react/http": "^1.6",
-    "clue/block-react": "^1.5"
-  }
 }
