@@ -7,8 +7,8 @@
 ---------------------------------------------
 
 ## installation
-```cmd
-    composer required marcio1002/discord-webhook-sdk-php
+```
+composer required marcio1002/discord-webhook-sdk-php
 ```
 
 
