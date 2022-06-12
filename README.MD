@@ -6,6 +6,11 @@
 
 ---------------------------------------------
 
+## installation
+```cmd
+    composer required marcio1002/discord-webhook-sdk-php
+```
+
 
 ## Constructor parameter options
 
