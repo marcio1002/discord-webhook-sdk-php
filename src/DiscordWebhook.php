@@ -13,7 +13,7 @@ use
 class DiscordWebhook implements DiscordWebhookContract
 {
 
-    private $browser;
+    private Browser $browser;
     private array $options;
 
     /**
@@ -24,6 +24,10 @@ class DiscordWebhook implements DiscordWebhookContract
     {
         $this->browser = new Browser();
         $this->options = $this->sanitizeOptions($options);
+
+        if(!array_key_exists('webhook_url', $this->options) || empty($this->options['webhook_url'])) {
+            throw new \Exception('Webhook URL is required');
+        }
     }
 
 
@@ -116,7 +120,7 @@ class DiscordWebhook implements DiscordWebhookContract
      * Sanitize the options
      *
      * @param array $options
-     * @return void
+     * @return array
      */
     private function sanitizeOptions(array $options)
     {
