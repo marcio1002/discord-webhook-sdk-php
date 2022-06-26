@@ -7,18 +7,14 @@ namespace Marcio1002\DiscordWebhook\Helpers\Traits;
  */
 trait Facades 
 {
-    protected static ?object $instance = null;
-
     public static function __callStatic($method, $args)
     {
-        if(empty(static::$instance)) {
-            static::$instance = static::handleClass();
+        $instance = static::handleClass();
+
+        if(!method_exists($instance, $method)) {
+            throw new \Exception("Method {$method} not found in class " . get_class($instance));
         }
 
-        if(!method_exists(static::$instance, $method)) {
-            throw new \Exception("Method {$method} not found");
-        }
-
-        return static::$instance->$method(...$args);
+        return $instance->$method(...$args);
     }
 }
