@@ -9,7 +9,7 @@ class MessageEmbed
 {
     use Facades;
 
-    public static function handleClass()
+    public static function getInstance()
     {
         return new DiscordWebhookMessageEmbed();
     }

@@ -4,13 +4,13 @@
     <img src='./assets/send-message.png' alt='Message sent in Discord by webhook' width='50%'/>
 </div>
 
----------------------------------------------
+---
 
 ## installation
+
 ```
 composer require marcio1002/discord-webhook-sdk-php
 ```
-
 
 ## Constructor parameter options
 
@@ -92,7 +92,20 @@ $embeds = array_map(
 $webhook->sendMessage($embeds);
 ```
 
-Sending raw data 
+
+
+Using facade class
+
+```php
+use Marcio1002\DiscordWebhook\Facades\MessageEmbed;
+
+$webhook->sendMessage(
+    MessageEmbed::setTitle('Title')
+        ->setDescription('Description')
+);
+```
+
+Sending raw data
 
 ```php
 
