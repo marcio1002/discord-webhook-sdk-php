@@ -92,17 +92,14 @@ $embeds = array_map(
 $webhook->sendMessage($embeds);
 ```
 
-
-
-Using facade class
+Sending facades class
 
 ```php
-use Marcio1002\DiscordWebhook\Facades\MessageEmbed;
+$webhook = DiscordWebhook::configure([
+    'webhook_url' => $webhook_url
+]);
 
-$webhook->sendMessage(
-    MessageEmbed::setTitle('Title')
-        ->setDescription('Description')
-);
+DiscordWebhook::sendMessage('Message');
 ```
 
 Sending raw data
