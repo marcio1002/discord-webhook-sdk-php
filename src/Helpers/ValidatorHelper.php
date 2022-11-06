@@ -2,7 +2,8 @@
 
 namespace Marcio1002\DiscordWebhook\Helpers;
 
-class Validator {
+class ValidatorHelper
+{
     /**
      * Checks if the string is a URL
      *
@@ -25,7 +26,7 @@ class Validator {
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mime = finfo_buffer($finfo, file_get_contents($image));
         finfo_close($finfo);
-        
+
 
         return $mime != false && preg_match("/image\/(png|gif|jpg)/", $mime);
     }
@@ -58,7 +59,7 @@ class Validator {
         foreach ($array as $key => $value) {
             if (!$callback($value, $key)) return false;
         }
-        
-        return true;   
+
+        return true;
     }
 }

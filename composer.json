@@ -21,8 +21,8 @@
         }
     ],
     "require": {
-        "php": ">=7.4.0",
+        "php": ">=7.4",
         "react/http": "^1.6",
-        "clue/block-react": "^1.5"
+        "react/async": "^3.0"
     }
 }

@@ -2,69 +2,79 @@
 
 namespace Marcio1002\DiscordWebhook;
 
-use
-    Marcio1002\DiscordWebhook\Contracts\DiscordWebhookContract,
-    Marcio1002\DiscordWebhook\Helpers\Validator;
-
-use
-    React\Http\Browser,
-    React\Promise\Promise;
+use Marcio1002\DiscordWebhook\Contracts\DiscordWebhookContract;
+use Marcio1002\DiscordWebhook\Helpers\HttpHelper;
+use React\Http\Browser;
 
 class DiscordWebhook implements DiscordWebhookContract
 {
 
+    private string $base_url = 'https://discord.com/api/webhooks/';
+    private string $base_path = '';
     private Browser $browser;
     private array $options;
 
-    /**
-     *
-     * @param string $url
-     */
+
     public function __construct(array $options)
     {
-        $this->browser = new Browser();
-        $this->options = $this->sanitizeOptions($options);
+        $this->options = HttpHelper::sanitizeOptions($options);
 
-        if(!array_key_exists('webhook_url', $this->options) || empty($this->options['webhook_url'])) {
-            throw new \Exception('Webhook URL is required');
+        if (!array_key_exists('webhook_id', $this->options) || !array_key_exists('token', $this->options)) {
+            throw new \Exception('Webhook id and token is required');
         }
+
+        ['webhook_id' => $webhook_id, 'token' => $token] = $this->options;
+
+        $this->browser = (new Browser())->withBase($this->base_url);
+
+        $this->base_path = "{$webhook_id}/{$token}";
+
+        unset($this->options['webhook_id'], $this->options['token']);
     }
 
 
-    /**
-     * Send a message to the webhook
-     * @param string|array|\Marcio1002\DiscordWebhook\MessageEmbed|\Marcio1002\DiscordWebhook\MessageEmbed[]|\Marcio1002\DiscordWebhook\Message $message
-     * @return Promise
-     */
-    public function sendMessage($message): Promise
+    public function sendMessage($message, bool $sync = false)
     {
 
-        return $this->browser->post(
-            $this->options['webhook_url'],
-            [
-                'Content-Type' => 'application/json',
-            ],
+        $response = $this->browser->post(
+            "{$this->base_path}?wait=true",
+            ['Content-Type' => 'application/json'],
             $this->resolveMessage($message)
         );
+
+        return HttpHelper::resolveResponse($response, $sync);
+    }
+
+    public function editMessage(string $message_id, $message, bool $sync = false)
+    {
+        $response = $this->browser->patch(
+            "{$this->base_path}/messages/$message_id",
+            ['Content-Type' => 'application/json'],
+            $this->resolveMessage($message)
+        );
+
+        return HttpHelper::resolveResponse($response, $sync);
     }
 
 
-    /**
-     * Send a message to the webhook synchronously
-     *
-     * @param string|array|\Marcio1002\DiscordWebhook\MessageEmbed|\Marcio1002\DiscordWebhook\MessageEmbed[]|\Marcio1002\DiscordWebhook\Message $message
-     * @return mixed
-     */
-    public function sendMessageSync($message)
+    public function getMessage(string $message_id, bool $sync = false)
     {
+        $response = $this->browser->get(
+            "{$this->base_path}/messages/$message_id",
+            ['Content-Type' => 'application/json']
+        );
 
-        return \Clue\React\Block\await($this->browser->post(
-            $this->options['webhook_url'],
-            [
-                'Content-Type' => 'application/json',
-            ],
-            $this->resolveMessage($message)
-        ));
+        return HttpHelper::resolveResponse($response, $sync);
+    }
+
+
+    public function deleteMessage(string $message_id, $sync = false)
+    {
+        $response = $this->browser->delete(
+            "{$this->base_path}/messages/$message_id"
+        );
+
+        return HttpHelper::resolveResponse($response, $sync);
     }
 
     /**
@@ -74,83 +84,8 @@ class DiscordWebhook implements DiscordWebhookContract
      */
     private function resolveMessage($message)
     {
-        $webhook_props = [];
-        $options = $this->options;
-        unset($options['webhook_url']);
+        $body = array_merge(HttpHelper::resolveMessage($message), $this->options);
 
-        if (is_string($message)) {
-            $webhook_props['content'] = $message;
-        }
-
-        if($message instanceof Message) {
-            $webhook_props = $message->toArray();
-        }
-
-        if ($message instanceof MessageEmbed) {
-            $webhook_props['embeds'] = [$message->getEmbed()];
-        }
-
-        if (is_array($message)) {
-            $is_message_embed = Validator::arrayEvery(fn($v) => $v instanceof MessageEmbed, $message);
-            $is_array_php = Validator::arrayEvery(fn($v) => !($v instanceof Message), $message); 
-
-            if(!$is_message_embed && !$is_array_php) {
-                throw new \InvalidArgumentException('Expected an array php or array of MessageEmbed object');
-            }
-
-            if($is_message_embed) {
-                $webhook_props['embeds'] = array_map(fn(MessageEmbed $v) => $v->getEmbed(), $message);
-            }
-
-            if(!$is_message_embed) {
-                $webhook_props = $this->sanitizeProps($message);
-            }
-        }
-
-        if (!empty($options)) {
-            $webhook_props = array_merge($webhook_props, $options);
-        }
-
-
-        return json_encode($webhook_props);
-    }
-
-
-    /**
-     * Sanitize the options
-     *
-     * @param array $options
-     * @return array
-     */
-    private function sanitizeOptions(array $options)
-    {
-        $options_in_includes = ['webhook_url', 'tts', 'thread_name'];
-
-        $options = array_filter(
-            $options,
-            fn($opKey) =>  in_array($opKey, $options_in_includes),
-            ARRAY_FILTER_USE_KEY
-        );
-
-        return $options;
-    }
-
-    /**
-     * Sanitize the props webhook
-     *
-     * @param array $props
-     * @return void
-     */
-    private function sanitizeProps(array $props)
-    {
-        $props_in_includes = ['content', 'username', 'avatar_url', 'tts', 'embeds'];
-
-        $props = array_filter(
-            $props,
-            fn($msgKey) =>  in_array($msgKey, $props_in_includes),
-            ARRAY_FILTER_USE_KEY
-        );
-
-        return $props;
+        return json_encode($body);
     }
 }
